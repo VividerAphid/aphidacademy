@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>galaxy227</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<link id="favicon" rel="icon" href="https://avatars.githubusercontent.com/u/102396259?v=4" type="image/png">
+
+		<style>
+			* {
+				color: white;
+				overflow-wrap: anywhere;
+				font-size: 1.2rem;
+				box-sizing: border-box;
+			}
+			html, body {
+				width: 100vw;
+				height: 100vh;
+				margin: 0;
+				background-color: #101626;
+				overflow: hidden;
+			}
+			main {
+				position: relative;
+				width: 100%;
+				height: 100%;
+				display: flex;
+				flex-direction: column;
+				justify-content: center;
+				align-items: center;
+			}
+			.quote {
+				position: absolute;
+				top: 15%;
+				max-width: 50%;
+				font-family: "Courier New";
+			}
+			.badGuy {
+				height: 10%;
+				width: auto;
+				border: 10px solid red;
+				min-height: 200px;
+				min-width: 200px;
+			}
+		</style>
+	</head>
+  	<body>
+		<main>
+		</main>
+
+		<script type="module">
+			const main = document.querySelector("main");
+			const badGuySrc = "https://i.imgflip.com/3gp9sz.jpg";
+			const badGuyAlt = "I'm GAY and I PISS and SHIT all over the place.";
+			const timeBadGuy = 1000;
+
+			function createBadGuy() {
+				const img = document.createElement("img");
+				img.src = badGuySrc;
+				img.alt = badGuyAlt;
+				img.classList.add("badGuy");
+				img.addEventListener("click", (e) => {
+					const element = e.currentTarget;
+					spinBadGuy(element);
+				});
+				main.appendChild(img);
+				// Members
+				img.gayCount = 0;
+				return img;
+			}
+			function moveBadGuy(img, x, y) {
+				img.style.left = (typeof x === "number" ? x : 0) + "px";
+				img.style.top = (typeof y === "number" ? y : 0) + "px";
+			}
+			function makeGayBadGuy(img) {
+				// Reset
+				if (img.gayCount > 3) img.gayCount = 0;
+				// Make gay
+				if (img.gayCount == 0) img.style.borderColor = "red";
+				else if (img.gayCount == 1) img.style.borderColor = "blue";
+				else if (img.gayCount == 2) img.style.borderColor = "green";
+				else if (img.gayCount == 3) img.style.borderColor = "yellow";
+				img.gayCount++;
+			}
+			function rotateBadGuy(img, deg) {
+				  img._rotDeg = deg;
+				  img.style.transformOrigin = "50% 50%";
+				  img.style.transform = "rotate(" + deg + "deg)";
+			}
+			function spinBadGuy(img) {
+				var steps = 30;
+				var stepDeg = 360 / steps;
+				var i = 0;
+				if (typeof img._rotDeg !== "number") img._rotDeg = 0;
+				// First spin
+				i++;
+				rotateBadGuy(img, img._rotDeg + stepDeg);
+				// Finish spin
+				var timer = setInterval(function () {
+					i++;
+					rotateBadGuy(img, img._rotDeg + stepDeg);
+					if (i >= steps) clearInterval(timer);
+				}, 20);
+			}
+			async function fetchQuoteString() {
+				try {
+					var res = await fetch("https://api.quotable.io/quotes/random", { method: "GET" });
+					if (!res.ok) return "NULL";
+					var body = await res.json();
+					if (!Array.isArray(body) || body.length === 0) return "NULL";
+					if (!body[0] || typeof body[0].content !== "string") return "NULL";
+					return body[0].content;
+				} catch (e) {
+					return badGuyAlt;
+				}
+			}
+
+			// Create quote
+			const quote = await fetchQuoteString();
+			const p = document.createElement("p");
+			p.classList.add("quote");
+			p.textContent = quote;
+			main.appendChild(p);
+			// Create bad guy
+			const img = createBadGuy();
+			spinBadGuy(img);
+			setInterval(makeGayBadGuy, 1000, img);
+		</script>
+	</body>
+</html>
