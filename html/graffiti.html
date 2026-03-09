@@ -1,12 +1,26 @@
 <!DOCTYPE html>
 <head>
     <title>Aphid Academys Graffiti Page</title>
+    <style>
+        body { background: #000; font-family: monospace; }
+        p { animation: glitch 2s infinite; }
+        @keyframes glitch {
+            0%,100% { transform: none; color: aqua; }
+            33% { transform: skewX(10deg); color: red; text-shadow: -3px 0 lime; }
+            66% { transform: skewX(-5deg); color: lime; text-shadow: 3px 0 red; }
+        }
+    </style>
 </head>
 
 <link rel="stylesheet" href="../global.css">
 
 <body>
     <p>The purpose of this page is just for folks to play around with git and add things in</p>
-
     <p style="color:aqua">Mins is mins</p>
+
+    <p id="troll"></p>
+    <script>
+        const msgs = ["ur pushing to main, right?", "git push --force 👍", "have you tried turning it off?"];
+        setInterval(() => document.getElementById("troll").textContent = msgs[Math.floor(Math.random()*msgs.length)], 2000);
+    </script>
 </body>
