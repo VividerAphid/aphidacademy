@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>GROXAR // PROFILE</title>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Oswald:wght@400;600;700&family=Source+Code+Pro:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --od-green:   #4a5240;
+      --tan:        #c8a951;
+      --dark-tan:   #8b7355;
+      --blood:      #8b0000;
+      --off-black:  #0d0e0b;
+      --panel:      #131410;
+      --border:     #2a2c25;
+      --muted:      #5a5c52;
+      --text:       #c8c9be;
+      --bright:     #e8e9de;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background-color: var(--off-black);
+      color: var(--text);
+      font-family: 'Share Tech Mono', monospace;
+      min-height: 100vh;
+      overflow-x: hidden;
+      cursor: crosshair;
+    }
+
+    /* ── NOISE TEXTURE OVERLAY ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 999;
+      opacity: 0.4;
+    }
+
+    /* ── SCANLINE ── */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0,0,0,0.07) 2px,
+        rgba(0,0,0,0.07) 4px
+      );
+      pointer-events: none;
+      z-index: 998;
+    }
+
+    /* ── TOP BAR ── */
+    .topbar {
+      background: var(--panel);
+      border-bottom: 2px solid var(--tan);
+      padding: 8px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 10px;
+      letter-spacing: 2px;
+      color: var(--muted);
+      animation: fadeDown 0.5s ease both;
+    }
+    .topbar .callsign { color: var(--tan); font-weight: 600; font-size: 11px; }
+    .topbar .status { display: flex; align-items: center; gap: 6px; }
+    .topbar .status::before {
+      content: '';
+      width: 7px; height: 7px;
+      background: #4caf50;
+      border-radius: 50%;
+      box-shadow: 0 0 6px #4caf50;
+      animation: pulse-green 2s infinite;
+    }
+
+    /* ── MAIN LAYOUT ── */
+    .wrapper {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 32px 24px 60px;
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: 24px;
+      animation: fadeUp 0.6s ease 0.2s both;
+    }
+
+    /* ── LEFT COLUMN ── */
+    .left { display: flex; flex-direction: column; gap: 16px; }
+
+    .id-card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-top: 3px solid var(--tan);
+      padding: 24px;
+      position: relative;
+      overflow: hidden;
+    }
+    .id-card::before {
+      content: 'UNCLASSIFIED';
+      position: absolute;
+      top: 8px; right: 8px;
+      font-size: 8px;
+      letter-spacing: 2px;
+      color: var(--blood);
+      opacity: 0.6;
+    }
+
+    .avatar-wrap {
+      width: 120px;
+      height: 120px;
+      margin: 0 auto 16px;
+      position: relative;
+    }
+    .avatar-wrap::before, .avatar-wrap::after {
+      content: '';
+      position: absolute;
+      border: 1px solid var(--tan);
+    }
+    .avatar-wrap::before {
+      inset: -6px;
+      clip-path: polygon(8px 0%, 100% 0%, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0% 100%, 0% 8px);
+    }
+    .avatar-wrap::after {
+      inset: -12px;
+      clip-path: polygon(12px 0%, 100% 0%, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0% 100%, 0% 12px);
+      border-color: var(--border);
+    }
+
+    .avatar {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      clip-path: polygon(8px 0%, 100% 0%, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0% 100%, 0% 8px);
+      display: block;
+      /* ── SWAP src with your actual image ── */
+      background: linear-gradient(135deg, #2a2c25 0%, #1a1c15 100%);
+      position: relative;
+    }
+
+    /* Placeholder silhouette */
+    .avatar-placeholder {
+      width: 120px;
+      height: 120px;
+      background: linear-gradient(160deg, #2a2c25, #131410);
+      clip-path: polygon(8px 0%, 100% 0%, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0% 100%, 0% 8px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 48px;
+      color: var(--od-green);
+      border: 1px solid var(--border);
+    }
+
+    .username {
+      font-family: 'Oswald', sans-serif;
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: 4px;
+      text-align: center;
+      color: var(--tan);
+      text-transform: uppercase;
+      text-shadow: 0 0 20px rgba(200,169,81,0.3);
+    }
+    .rank-tag {
+      text-align: center;
+      font-size: 10px;
+      letter-spacing: 3px;
+      color: var(--muted);
+      margin-top: 4px;
+      text-transform: uppercase;
+    }
+
+    .divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 16px 0;
+    }
+
+    .id-field { margin-bottom: 10px; }
+    .id-field .label {
+      font-size: 9px;
+      letter-spacing: 2px;
+      color: var(--muted);
+      text-transform: uppercase;
+      display: block;
+      margin-bottom: 2px;
+    }
+    .id-field .value {
+      font-size: 13px;
+      color: var(--bright);
+    }
+
+    /* ── RIBBON RACK ── */
+    .ribbon-rack {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      padding: 14px 16px 12px;
+    }
+    .section-label {
+      font-size: 9px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+    .ribbon-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 3px;
+    }
+    .ribbon-bar {
+      height: 14px;
+      position: relative;
+      cursor: pointer;
+      transition: transform 0.15s, filter 0.15s;
+      border-radius: 1px;
+      overflow: visible;
+    }
+    .ribbon-bar::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(255,255,255,0.1) 0%, transparent 60%);
+      pointer-events: none;
+    }
+    .ribbon-bar:hover { transform: translateY(-2px) scale(1.1); filter: brightness(1.4); z-index: 10; }
+    .ribbon-bar:hover .rtip { opacity: 1; transform: translateX(-50%) translateY(-2px); }
+    .rtip {
+      position: absolute;
+      bottom: calc(100% + 6px);
+      left: 50%;
+      transform: translateX(-50%) translateY(2px);
+      background: #1a1a14;
+      border: 1px solid var(--tan);
+      color: var(--tan);
+      font-size: 9px;
+      white-space: nowrap;
+      padding: 3px 7px;
+      opacity: 0;
+      transition: opacity 0.2s, transform 0.2s;
+      pointer-events: none;
+      z-index: 100;
+      letter-spacing: 1px;
+    }
+    .r-gwot  { background: linear-gradient(90deg,#b8860b 0%,#b8860b 20%,#8b0000 20%,#8b0000 40%,#b8860b 40%,#b8860b 60%,#8b0000 60%,#8b0000 80%,#b8860b 80%); }
+    .r-iraq  { background: linear-gradient(90deg,#228b22 0%,#228b22 25%,#c8a951 25%,#c8a951 50%,#8b0000 50%,#8b0000 75%,#c8a951 75%); }
+    .r-nato  { background: linear-gradient(90deg,#003082 0%,#003082 20%,#c8a951 20%,#c8a951 40%,#003082 40%,#003082 60%,#c8a951 60%,#c8a951 80%,#003082 80%); }
+    .r-nd    { background: linear-gradient(90deg,#8b0000 0%,#8b0000 25%,#1a237e 25%,#1a237e 50%,#8b0000 50%,#8b0000 75%,#1a237e 75%); }
+    .r-arcom { background: linear-gradient(90deg,#1a237e 0%,#1a237e 33%,#c8a951 33%,#c8a951 66%,#1a237e 66%); }
+    .r-good  { background: linear-gradient(90deg,#8b0000 0%,#c8a951 25%,#1a237e 50%,#c8a951 75%,#8b0000 100%); }
+    @keyframes ribbon-in { from { filter: brightness(0.2); } to { filter: brightness(1); } }
+    .ribbon-bar { animation: ribbon-in 0.4s ease both; }
+    .ribbon-bar:nth-child(1){animation-delay:.05s}.ribbon-bar:nth-child(2){animation-delay:.10s}
+    .ribbon-bar:nth-child(3){animation-delay:.15s}.ribbon-bar:nth-child(4){animation-delay:.20s}
+    .ribbon-bar:nth-child(5){animation-delay:.25s}.ribbon-bar:nth-child(6){animation-delay:.30s}
+
+    /* ── RIGHT COLUMN ── */
+    .right { display: flex; flex-direction: column; gap: 16px; }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--tan);
+      padding: 20px 24px;
+    }
+    .panel-title {
+      font-family: 'Oswald', sans-serif;
+      font-size: 13px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--tan);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .panel-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .bio-text {
+      font-size: 13px;
+      line-height: 1.8;
+      color: var(--text);
+    }
+    .bio-text p { margin-bottom: 10px; }
+
+    /* Fun facts */
+    .facts-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .fact-item {
+      background: #0d0e0b;
+      border: 1px solid var(--border);
+      padding: 10px 14px;
+      font-size: 12px;
+      transition: border-color 0.2s;
+    }
+    .fact-item:hover { border-color: var(--tan); }
+    .fact-item .fact-label {
+      font-size: 9px;
+      letter-spacing: 2px;
+      color: var(--muted);
+      text-transform: uppercase;
+      display: block;
+      margin-bottom: 4px;
+    }
+    .fact-item .fact-val { color: var(--bright); }
+
+    /* Links */
+    .links-list { display: flex; flex-direction: column; gap: 8px; }
+    .link-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 14px;
+      background: #0d0e0b;
+      border: 1px solid var(--border);
+      text-decoration: none;
+      color: var(--text);
+      font-size: 13px;
+      transition: border-color 0.2s, color 0.2s, transform 0.15s;
+    }
+    .link-item:hover {
+      border-color: var(--tan);
+      color: var(--tan);
+      transform: translateX(4px);
+    }
+    .link-icon {
+      width: 28px;
+      height: 28px;
+      background: var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      flex-shrink: 0;
+      clip-path: polygon(4px 0%,100% 0%,100% calc(100% - 4px),calc(100% - 4px) 100%,0% 100%,0% 4px);
+    }
+    .link-item:hover .link-icon { background: var(--tan); }
+    .link-meta { font-size: 10px; color: var(--muted); letter-spacing: 1px; display: block; }
+
+    /* Flairs */
+    .flairs { display: flex; flex-wrap: wrap; gap: 8px; }
+    .flair {
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 5px 12px;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      transition: all 0.2s;
+      position: relative;
+      clip-path: polygon(6px 0%,100% 0%,100% calc(100% - 6px),calc(100% - 6px) 100%,0% 100%,0% 6px);
+    }
+    .flair:hover { border-color: var(--tan); color: var(--tan); }
+    .flair.hot { border-color: var(--blood); color: #e57373; }
+    .flair.gold { border-color: var(--tan); color: var(--tan); }
+
+    /* ── FOOTER ── */
+    .footer {
+      text-align: center;
+      font-size: 10px;
+      letter-spacing: 2px;
+      color: var(--muted);
+      padding: 24px;
+      border-top: 1px solid var(--border);
+      animation: fadeUp 0.6s ease 0.5s both;
+    }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeDown { from { opacity:0; transform:translateY(-10px); } to { opacity:1; transform:translateY(0); } }
+    @keyframes fadeUp   { from { opacity:0; transform:translateY(16px);  } to { opacity:1; transform:translateY(0); } }
+    @keyframes pulse-green { 0%,100%{ box-shadow:0 0 4px #4caf50; } 50%{ box-shadow:0 0 10px #4caf50; } }
+
+    @media (max-width: 700px) {
+      .wrapper { grid-template-columns: 1fr; }
+      .facts-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- TOP BAR -->
+  <div class="topbar">
+    <span>PERSONNEL FILE // GROXAR</span>
+    <span class="callsign">CALLSIGN: GROXAR</span>
+    <span class="status">ONLINE</span>
+  </div>
+
+  <div class="wrapper">
+
+    <!-- ═══ LEFT COLUMN ═══ -->
+    <div class="left">
+
+      <!-- ID CARD -->
+      <div class="id-card">
+        <div class="avatar-wrap">
+          <img class="avatar" src="https://github.com/raxorg.png" alt="Groxar">
+        </div>
+
+        <div class="username">GROXAR</div>
+        <div class="rank-tag">▸ VETERAN ◂</div>
+        <hr class="divider">
+
+        <div class="id-field">
+          <span class="label">Status</span>
+          <span class="value">Honorably Discharged</span>
+        </div>
+        <div class="id-field">
+          <span class="label">Branch</span>
+          <!-- ── CHANGE THIS ── -->
+          <span class="value">[ SPEC - OPS ]</span>
+        </div>
+        <div class="id-field">
+          <span class="label">MOS / Rate</span>
+          <!-- ── CHANGE THIS ── -->
+          <span class="value">[ 1st SFOD-D ]</span>
+        </div>
+        <div class="id-field">
+          <span class="label">Years Served</span>
+          <!-- ── CHANGE THIS ── -->
+          <span class="value">[ REDACTED ] Years</span>
+        </div>
+      </div>
+
+      <!-- RIBBON RACK -->
+      <div class="ribbon-rack">
+        <div class="section-label">Service Ribbons</div>
+        <div class="ribbon-grid">
+          <!-- Hover each ribbon to see its name. Edit class + tooltip to match yours. -->
+          <div class="ribbon-bar r-gwot"><span class="rtip">GWOT Service</span></div>
+          <div class="ribbon-bar r-iraq"><span class="rtip">Campaign Medal</span></div>
+          <div class="ribbon-bar r-nato"><span class="rtip">NATO Medal</span></div>
+          <div class="ribbon-bar r-nd"  ><span class="rtip">GDX Medal</span></div>
+          <div class="ribbon-bar r-arcom"><span class="rtip">Commendation</span></div>
+          <div class="ribbon-bar r-good"><span class="rtip">Good Conduct</span></div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ═══ RIGHT COLUMN ═══ -->
+    <div class="right">
+
+      <!-- BIO -->
+      <div class="panel">
+        <div class="panel-title">// About</div>
+        <div class="bio-text">
+          <!-- ── CHANGE THIS ── -->
+          <p>[ One day the best game developer in human history ]</p>
+          <p>[ Fun guides me, solid principles are nice but good taste is even better ]</p>
+        </div>
+      </div>
+
+      <!-- FUN FACTS -->
+      <div class="panel">
+        <div class="panel-title">// Intel</div>
+        <div class="facts-grid">
+          <!-- ── CHANGE THESE ── -->
+          <div class="fact-item">
+            <span class="fact-label">Deployed To</span>
+            <span class="fact-val">[ Bolivia ]</span>
+          </div>
+          <div class="fact-item">
+            <span class="fact-label">Current Op</span>
+            <span class="fact-val">[ GameDev ]</span>
+          </div>
+          <div class="fact-item">
+            <span class="fact-label">Weapon of Choice</span>
+            <span class="fact-val">[ Java ]</span>
+          </div>
+          <div class="fact-item">
+            <span class="fact-label">Fun Fact</span>
+            <span class="fact-val">[ Breath smells good when I wake up ]</span>
+          </div>
+          <div class="fact-item">
+            <span class="fact-label">Hobby</span>
+            <span class="fact-val">[ Poetry ]</span>
+          </div>
+          <div class="fact-item">
+            <span class="fact-label">Affiliation</span>
+            <span class="fact-val">[ A.I. Technocrat ]</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- PROJECT LINKS -->
+      <div class="panel">
+        <div class="panel-title">// Ops & Links</div>
+        <div class="links-list">
+          <!-- ── CHANGE href AND TEXT ── -->
+          <a class="link-item" href="https://github.com/raxorg/" target="_blank">
+            <div class="link-icon">🐙</div>
+            <div>
+              <span>GitHub</span>
+              <span class="link-meta">github.com/raxorg</span>
+            </div>
+          </a>
+          <a class="link-item" href="https://raxorg.github.io/Alejandria/" target="_blank">
+            <div class="link-icon">🖥️</div>
+            <div>
+              <span>Project Alpha — Alejandria</span>
+              <span class="link-meta">Open source libGDX demos</span>
+            </div>
+          </a>
+          <a class="link-item" href="https://groxar.itch.io/" target="_blank">
+            <div class="link-icon">🖥️</div>
+            <div>
+              <span>Project Bravo — Itch.io Site</span>
+              <span class="link-meta">Play my game jam games</span>
+            </div>
+          </a>
+          <a class="link-item" href="https://www.youtube.com/playlist?list=PLNpGdLbx3t6qfUb-e9LnlijmFKxQTSs4y" target="_blank">
+            <div class="link-icon">🎵</div>
+            <div>
+              <span>My Epic Music Playlist</span>
+              <span class="link-meta">Hosted on YouTube</span>
+            </div>
+          </a>
+        </div>
+      </div>
+
+      <!-- FLAIRS -->
+      <div class="panel">
+        <div class="panel-title">// Flairs</div>
+        <div class="flairs">
+          <span class="flair gold">🎖 Veteran</span>
+          <span class="flair hot">⚠ Combat Tested</span>
+          <span class="flair">🍔 Runs on Hamburgers</span>
+          <span class="flair">💻 Coder</span>
+          <span class="flair">🔒 OPSEC Aware</span>
+          <span class="flair">🔪 Mins Group</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="footer">
+    GROXAR // PERSONNEL FILE // ALL INFORMATION ACCURATE AS OF DEPLOYMENT
+  </div>
+
+</body>
+</html>
